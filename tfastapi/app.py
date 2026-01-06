@@ -21,5 +21,5 @@ def health_check():
 @app.post("/detect")
 async def detect(file: UploadFile = File(...)):
     contents = await file.read()
-    result = detect_and_classify(contents)
-    return {"detections": result}
+    detections, annotated_image = detect_and_classify(contents)
+    return {"detections": detections, "annotated_image": annotated_image}

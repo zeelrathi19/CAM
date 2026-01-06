@@ -1,0 +1,13 @@
+train: train/images
+val: valid/images
+test: test/images
+
+nc: 1
+names: ['tyre']
+
+roboflow:
+  workspace: alpha-ir5wf
+  project: tyre-segmentation-fnlwv
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/alpha-ir5wf/tyre-segmentation-fnlwv/dataset/1
