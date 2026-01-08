@@ -121,10 +121,10 @@ def draw_shaded_areas(image, json_data):
             (0, 0),
             bc_top_img
         ], dtype=np.int32)
-        cv2.fillPoly(area2_overlay, [area2], (0, 255, 255))  # Yellow in BGR
+        cv2.fillPoly(area2_overlay, [area2], (255, 255, 0))  # Yellow in BGR
         overlay = cv2.addWeighted(overlay, 1.0, area2_overlay, 0.3, 0)
         cv2.putText(overlay, "Area 2", (50, 50),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 0), 2)
 
         # Area 3: Top-Right - Cyan (clockwise from Area 2)
         area3_overlay = np.zeros_like(img_array)
@@ -134,10 +134,10 @@ def draw_shaded_areas(image, json_data):
             (width, 0),
             bc_right_img
         ], dtype=np.int32)
-        cv2.fillPoly(area3_overlay, [area3], (255, 255, 0))  # Cyan in BGR
+        cv2.fillPoly(area3_overlay, [area3], (0, 255, 255))  # Cyan in BGR
         overlay = cv2.addWeighted(overlay, 1.0, area3_overlay, 0.3, 0)
         cv2.putText(overlay, "Area 3", (width - 150, 50),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 0), 2)
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
 
         # Area 4: Bottom-Right - Green (clockwise from Area 3)
         area4_overlay = np.zeros_like(img_array)
@@ -183,6 +183,8 @@ st.markdown("Define your L-shape by clicking 3 points (A, B, C) on an uploaded i
 # Initialize session state for points
 if 'clicked_points' not in st.session_state:
     st.session_state.clicked_points = []
+if 'just_reset' not in st.session_state:
+    st.session_state.just_reset = False
 
 # Choose configuration method
 config_method = st.radio(
@@ -261,7 +263,10 @@ if config_method == "Click 3 Points on Image":
         )
 
         # Handle new clicks - convert back to original coordinates
-        if coords is not None and len(st.session_state.clicked_points) < 3:
+        # Skip processing coords if we just reset (prevents re-adding old coords)
+        if st.session_state.just_reset:
+            st.session_state.just_reset = False
+        elif coords is not None and len(st.session_state.clicked_points) < 3:
             # Convert display coordinates back to original image coordinates
             original_x = int(coords["x"] / scale_factor)
             original_y = int(coords["y"] / scale_factor)
@@ -276,6 +281,7 @@ if config_method == "Click 3 Points on Image":
         with col_btn1:
             if st.button("🔄 Reset Points"):
                 st.session_state.clicked_points = []
+                st.session_state.just_reset = True
                 st.rerun()
 
         with col_btn2:
